@@ -47,4 +47,4 @@
         survey_enabled: True
       status_code: 201
     register: template
-
+    when: template_check.json.results == 0

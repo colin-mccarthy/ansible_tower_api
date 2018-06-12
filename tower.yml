@@ -4,7 +4,6 @@
   connection: local
   become: true
   vars:
-    ansible_network_os: ios
     tower_fqdn: 10.42.0.42
     tower_user: admin
     tower_password: ePfZbfNSkMed

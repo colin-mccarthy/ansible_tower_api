@@ -1,0 +1,30 @@
+---
+- hosts: all
+  gather_facts: no
+  connection: local
+  become: true
+  roles:
+    - network-engine
+  vars:
+    ansible_network_os: ios
+
+  tasks:
+
+  - name: Get vlan info
+    ios_command:
+      commands:
+        - show running-config vlan
+        - show vlan brief
+    register: result
+
+  - debug: msg="{{ result }}"
+
+
+
+  - name: parse vlan info
+    text_parser:
+      file: "parsers/vlan_facts_config.yml"
+      content: "{{ result.stdout.0 }}"
+
+  - debug: msg="{{ vlans_config }}"
+

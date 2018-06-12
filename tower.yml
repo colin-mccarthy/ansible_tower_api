@@ -1,0 +1,50 @@
+---
+- hosts: all
+  gather_facts: no
+  connection: local
+  become: true
+  vars:
+    ansible_network_os: ios
+    tower_fqdn: 10.42.0.42
+    tower_user: admin
+    tower_password: ePfZbfNSkMed
+    template_name: foo
+    inventory_id: 1
+    project_id: 7
+    playbook: banner_playbook.yml
+    credential_id: 3
+    
+
+  tasks:
+
+
+  - name: "Check if job template exists already - {{ template_name }}"
+    uri:
+      url: "https://{{ tower_fqdn }}/api/v2/job_templates/?name={{ template_name }}"
+      validate_certs: no
+      user: "{{ tower_user }}"
+      password: "{{ tower_password }}"
+      method: GET
+    register: template_check
+
+  - debug: msg="{{ template_check }}"
+
+  - name: "Create job template - {{ template_name }}"
+    uri:
+      url: "https://{{ tower_fqdn }}/api/v2/job_templates/"
+      validate_certs: no
+      user: "{{ tower_user }}"
+      password: "{{ tower_password }}"
+      method: POST
+      body_format: json
+      body:
+        name: "{{ template_name }}"
+        job_type: "run"
+        inventory: "{{ inventory_id }}"
+        project: "{{ project_id }}"
+        playbook: "{{ playbook }}"
+        credential: "{{ credential_id }}"
+        survey_enabled: True
+      status_code: 201
+    register: template
+
